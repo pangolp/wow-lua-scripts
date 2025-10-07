@@ -41,21 +41,30 @@ function OnGossipHello(_event, _player, _object)
     if (_player:IsInCombat() == false) then
         _player:GossipClearMenu()
         _player:GossipSetText("Hola |c990B0Bee$n|h|r, soy Oscar Isidro Parrilli, actual senador nacional de la Argentina. Como tengo algo de tiempo libre en el Senado, el servidor de Wow, al que estás jugando me pidió que se ayude a subir aquellas profesiones que te dan pereza. $B$BEs SIMPLE, solamente debes ir, tomar la profesión esa que te da pereza subir y volver a hablar conmigo. Yo me encargare de subirte la profesión a 450. Eso sí, no te daré ninguna receta.")
+        local itemCount = 0
         if (_player:GetLevel() == 80) then
-            for -, profession in pairs(professions) do
+            for _, profession in pairs(professions) do
                 if ((_player:HasSkill(profession.skillId)) and (_player:GetSkillValue(profession.skillId) ~= 450)) then
                     _player:GossipMenuAddItem(profession.iconId, profession.skillName, 1, profession.id)
+                    itemCount = itemCount + 1
                 end
             end
+            if (itemCount == 1) then
+                _player:GossipMenuAddItem(0, "Cerrar Menú", 0, 99)
+            end
+        else
+            _player:SendAreaTriggerMessage("El jugador no es nivel 80.")
         end
         _player:GossipSendMenu(0x7FFFFFFF, _object)
+    else
+        _player:SendAreaTriggerMessage("El jugador esta en combate.")
     end
 end
 
 function OnGossipSelect(_event, _player, _object, _sender, _intid, _code, _menuid)
-    for -, profession in pairs(professions) do
+    for _, profession in pairs(professions) do
         if (_intid == profession.id) then
-            for -, spell in ipairs(profession.spells) do
+            for _, spell in ipairs(profession.spells) do
                 if (_player:HasSpell(spell) == false) then
                     _player:LearnSpell(spell)
                 end
