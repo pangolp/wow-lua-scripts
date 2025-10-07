@@ -1,22 +1,23 @@
--- Acá iría el entry del npc que pongas en la DB
 local NPC_ENTRY = 200004
 local SMSG_NPC_TEXT_UPDATE = 384
 local MAX_GOSSIP_TEXT_OPTIONS = 8
 
-local ALQUIMIA = 171
-local DESUELLO = 393
-local ENCANTAMIENTO = 333
-local HERRERIA = 164
-local INGENIERIA = 202
-local INSCRIPCION = 773
-local JOYERIA = 755
-local MINERIA = 186
-local PELETERIA = 165
-local SASTRERIA = 197
-local HERBORISTERIA = 182
-local COCINA = 185
-local PESCA = 356
-local PRIMEROS_AUXILIOS = 129
+local professions = {
+    { id = 1, skillId = 171, skillName = "Alquimia" },
+    { id = 2, skillId = 393, skillName = "Desuello" },
+    { id = 3, skillId = 333, skillName = "Encantamiento" },
+    { id = 4, skillId = 164, skillName = "Herreria" },
+    { id = 5, skillId = 202, skillName = "Ingeniería" },
+    { id = 6, skillId = 773, skillName = "Inscripcion" },
+    { id = 7, skillId = 755, skillName = "Joyeria" },
+    { id = 8, skillId = 186, skillName = "Mineria" },
+    { id = 9, skillId = 165, skillName = "Peleteria" },
+    { id = 10, skillId = 197, skillName = "Sastreria" },
+    { id = 11, skillId = 182, skillName = "Herboristeria" },
+    { id = 12, skillId = 185, skillName = "Cocina" },
+    { id = 13, skillId = 356, skillName = "Pesca" },
+    { id = 14, skillId = 129, skillName = "Primeros auxilios" },
+}
 
 function Player:GossipSetText(text, textID)
     local data = CreatePacket(SMSG_NPC_TEXT_UPDATE, 100);
@@ -41,56 +42,18 @@ function OnGossipHello(event, player, object)
         player:GossipClearMenu()
         player:GossipSetText("Hola $n, soy Oscar Isidro Parrilli, actual senador nacional de la Argentina. Como tengo algo de tiempo libre en el Senado, el servidor de Wow, al que estás jugando me pidió que se ayude a subir aquellas profesiones que te dan pereza. $B$BEs SIMPLE, solamente debes ir, tomar la profesión esa que te da pereza subir y volver a hablar conmigo. Yo me encargare de subirte la profesión a 450. Eso sí, no te daré ninguna receta.")
         if (player:GetLevel() == 80) then
-            if ((player:HasSkill(ALQUIMIA) and (player:GetSkillValue(ALQUIMIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Alquimia 450 æ', 1, 10)
+            for profession in pairs(professions) do
+                if ((player:HasSkill(profession.skillId)) and (player:GetSkillValue(profession.skillId) ~= 450)) then
+                    player:GossipMenuAddItem(string.format("%d, '%s', %d, %d", 1, profession.skillName, 1, profession.id))
+                end
             end
-            if ((player:HasSkill(DESUELLO) and (player:GetSkillValue(DESUELLO) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Desuello 450 æ', 1, 11)
-            end
-            if ((player:HasSkill(ENCANTAMIENTO) and (player:GetSkillValue(ENCANTAMIENTO) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Encantamiento 450 æ', 1, 12)
-            end
-            if ((player:HasSkill(HERRERIA) and (player:GetSkillValue(HERRERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Herrería 450 æ', 1, 13)
-            end
-            if ((player:HasSkill(INGENIERIA) and (player:GetSkillValue(INGENIERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Ingeniería 450 æ', 1, 14)
-            end
-            if ((player:HasSkill(INSCRIPCION) and (player:GetSkillValue(INSCRIPCION) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Inscripción 450 æ', 1, 15)
-            end
-            if ((player:HasSkill(JOYERIA) and (player:GetSkillValue(JOYERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Joyería 450 æ', 1, 16)
-            end
-            if ((player:HasSkill(MINERIA) and (player:GetSkillValue(MINERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Minería 450 æ', 1, 17)
-            end
-            if ((player:HasSkill(PELETERIA) and (player:GetSkillValue(PELETERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Peletería 450 æ', 1, 18)
-            end
-            if ((player:HasSkill(SASTRERIA) and (player:GetSkillValue(SASTRERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Sastrería 450 æ', 1, 19)
-            end
-            if ((player:HasSkill(HERBORISTERIA) and (player:GetSkillValue(HERBORISTERIA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Herboristería 450 æ', 1, 20)
-            end
-            if ((player:HasSkill(COCINA) and (player:GetSkillValue(COCINA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Cocina 450 æ', 1, 21)
-            end
-            if ((player:HasSkill(PESCA) and (player:GetSkillValue(PESCA) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Pesca 450 æ', 1, 22)
-            end
-            if ((player:HasSkill(PRIMEROS_AUXILIOS) and (player:GetSkillValue(PRIMEROS_AUXILIOS) ~= 450))) then
-                player:GossipMenuAddItem(0, '  æ Primeros auxilios 450 æ', 1, 23)
-            end
-            -- player:GossipSendMenu(NPC_ENTRY, object)
             player:GossipSendMenu(0x7FFFFFFF, object)
         end
     end
 end
 
 function OnGossipSelect(event, player, object, sender, intid, code, menuid)
-    if (intid == 10) then
+    if (intid == 1) then
         -- 3101 - ALQUIMIA RANGO 2
         -- 3464 - ALQUIMIA RANGO 3
         -- 11611 - ALQUIMIA RANGO 4
@@ -105,7 +68,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(ALQUIMIA)
         player:AdvanceSkill(ALQUIMIA, maxSkill)
     end
-    if (intid == 11) then
+    if (intid == 2) then
         -- 8617 - DESUELLO RANGO 2
         -- 8618 - DESUELLO RANGO 3
         -- 10768 - DESUELLO RANGO 4
@@ -120,7 +83,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(DESUELLO)
         player:AdvanceSkill(DESUELLO, maxSkill)
     end
-    if (intid == 12) then
+    if (intid == 3) then
         -- 7412 - ENCANTAMIENTO RANGO 2
         -- 7413 - ENCANTAMIENTO RANGO 3
         -- 13920 - ENCANTAMIENTO RANGO 4
@@ -135,7 +98,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(ENCANTAMIENTO)
         player:AdvanceSkill(ENCANTAMIENTO, maxSkill)
     end
-    if (intid == 13) then
+    if (intid == 4) then
         -- 3100 - HERRERIA RANGO 2
         -- 3538 - HERRERIA RANGO 3
         -- 9785 - HERRERIA RANGO 4
@@ -150,7 +113,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(HERRERIA)
         player:AdvanceSkill(HERRERIA, maxSkill)
     end
-    if (intid == 14) then
+    if (intid == 5) then
         -- 4037 - INGENIERIA RANGO 2
         -- 4038 - INGENIERIA RANGO 3
         -- 12656 - INGENIERIA RANGO 4
@@ -165,7 +128,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(INGENIERIA)
         player:AdvanceSkill(INGENIERIA, maxSkill)
     end
-    if (intid == 15) then
+    if (intid == 6) then
         -- 45358 - INSCRIPCION RANGO 2
         -- 45359 - INSCRIPCION RANGO 3
         -- 45360 - INSCRIPCION RANGO 4
@@ -180,7 +143,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(INSCRIPCION)
         player:AdvanceSkill(INSCRIPCION, maxSkill)
     end
-    if (intid == 16) then
+    if (intid == 7) then
         -- 25230 - JOYERIA RANGO 2
         -- 28894 - JOYERIA RANGO 3
         -- 28895 - JOYERIA RANGO 4
@@ -195,7 +158,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(JOYERIA)
         player:AdvanceSkill(JOYERIA, maxSkill)
     end
-    if (intid == 17) then
+    if (intid == 8) then
         -- 2576 - MINERIA RANGO 2
         -- 3564 - MINERIA RANGO 3
         -- 10248 - MINERIA RANGO 4
@@ -210,7 +173,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(MINERIA)
         player:AdvanceSkill(MINERIA, maxSkill)
     end
-    if (intid == 18) then
+    if (intid == 9) then
         -- 3104 - PELETERIA RANGO 2
         -- 3811 - PELETERIA RANGO 3
         -- 10662 - PELETERIA RANGO 4
@@ -225,7 +188,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(PELETERIA)
         player:AdvanceSkill(PELETERIA, maxSkill)
     end
-    if (intid == 19) then
+    if (intid == 10) then
         -- 3909 - SASTRERIA RANGO 2
         -- 3910 - SASTRERIA RANGO 3
         -- 12180 - SASTRERIA RANGO 4
@@ -240,7 +203,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(SASTRERIA)
         player:AdvanceSkill(SASTRERIA, maxSkill)
     end
-    if (intid == 20) then
+    if (intid == 11) then
         -- 2368 - HERBORISTERIA RANGO 2
         -- 3570 - HERBORISTERIA RANGO 3
         -- 11993 - HERBORISTERIA RANGO 4
@@ -255,7 +218,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(HERBORISTERIA)
         player:AdvanceSkill(HERBORISTERIA, maxSkill)
     end
-    if (intid == 21) then
+    if (intid == 12) then
         -- 3102 - COCINA RANGO 2
         -- 3413 - COCINA RANGO 3
         -- 18260 - COCINA RANGO 4
@@ -270,7 +233,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(COCINA)
         player:AdvanceSkill(COCINA, maxSkill)
     end
-    if (intid == 22) then
+    if (intid == 13) then
         -- 7731 - PESCA RANGO 2
         -- 7732 - PESCA RANGO 3
         -- 18248 - PESCA RANGO 4
@@ -285,7 +248,7 @@ function OnGossipSelect(event, player, object, sender, intid, code, menuid)
         maxSkill = player:GetMaxSkillValue(PESCA)
         player:AdvanceSkill(PESCA, maxSkill)
     end
-    if (intid == 23) then
+    if (intid == 14) then
         -- 3274 - PRIMEROS AUXILIOS RANGO 2
         -- 7924 - PRIMEROS AUXILIOS RANGO 3
         -- 10846 - PRIMEROS AUXILIOS RANGO 4
